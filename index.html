@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine Surprise</title>
+    <style>
+        :root {
+            --pink: #ffb6c1;
+            --dark-pink: #ff69b4;
+            --white: #ffffff;
+            --text-color: #555;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle, #fff0f5, #ffb6c1);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            width: 90%;
+            max-width: 500px;
+            z-index: 2;
+        }
+
+        .heart-bg {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 300px;
+            color: rgba(255, 182, 193, 0.3);
+            z-index: 1;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        h2 { color: var(--text-color); margin-bottom: 20px; }
+        .hidden { display: none !important; }
+
+        button {
+            background: var(--dark-pink);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 10px rgba(255, 105, 180, 0.3);
+        }
+
+        button:hover { transform: scale(1.1); }
+
+        #game-area {
+            position: relative;
+            height: 350px;
+            width: 100%;
+            border: 2px dashed var(--pink);
+            border-radius: 15px;
+            overflow: hidden;
+            background: #fff9fb;
+            margin-top: 10px;
+        }
+
+        .kiss-icon {
+            position: absolute;
+            font-size: 35px;
+            cursor: pointer;
+            user-select: none;
+            z-index: 5;
+            transition: transform 0.1s;
+        }
+
+        /* Particles for the burst effect */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+            font-size: 15px;
+            animation: explode 0.8s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: var(--dark-pink);
+        }
+
+        .bear-panda { width: 180px; margin-bottom: 15px; }
+
+        .final-photo {
+            width: 100%;
+            border: 10px solid white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+            border-radius: 2px;
+            margin-top: 15px;
+            transform: rotate(-2deg);
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgm" loop>
+        <source src="I just wanna be yours.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="heart-bg">❤</div>
+
+    <div id="page1" class="container">
+        <img src="https://media.tenor.com/images/52dfbe1bd5be597d5d21d3bc50d7eb77/tenor.gif" class="bear-panda">
+        <h2>i have a surprise for you</h2>
+        <button onclick="handleStart()">what? »</button>
+    </div>
+
+    <div id="page2" class="container hidden">
+        <div style="font-size: 60px; margin-bottom: 10px;">💋</div>
+        <h2 style="color: var(--dark-pink); font-weight: bold;">Catch the Kiss!</h2>
+        <p>Catch 10 kisses to win a special surprise!</p>
+        <button onclick="startGame()">Start Playing »</button>
+    </div>
+
+    <div id="page3" class="container hidden">
+        <div class="stats">
+            <span>💋 <span id="score">0</span>/10</span>
+            <span>Time: <span id="timer">30</span>s</span>
+        </div>
+        <div id="game-area"></div>
+    </div>
+
+    <div id="page4" class="container hidden">
+        <div style="font-size: 50px;">🎉</div>
+        <h2 style="color: var(--dark-pink); font-weight: bold;">You Did It!</h2>
+        <p>Happy Kiss Day! 💋</p>
+        <button onclick="nextPage(5)">And? »</button>
+    </div>
+
+    <div id="page5" class="container hidden">
+        <img src="https://media.tenor.com/BnjDsieYltAAAAAj/cute-bear-kiss.gif" class="bear-panda" style="width: 100px;">
+        <h2>Unlimited kisses for you</h2>
+        <p style="color: var(--dark-pink); font-weight: bold;">Happy Kiss Day my Love!</p>
+        <img src="https://media1.tenor.com/m/DgDVKcN497YAAAAC/milkandmocha-kiss.gif" class="final-photo">
+    </div>
+
+    <script>
+        let score = 0;
+        let timeLeft = 30;
+        let timerId;
+        let audioStarted = false;
+
+        function nextPage(pageNumber) {
+            document.querySelectorAll('.container').forEach(c => c.classList.add('hidden'));
+            document.getElementById('page' + pageNumber).classList.remove('hidden');
+        }
+
+        function handleStart() {
+            const bgm = document.getElementById('bgm');
+            if (!audioStarted) {
+                bgm.play();
+                audioStarted = true;
+            }
+            nextPage(2);
+        }
+
+        function startGame() {
+            nextPage(3);
+            score = 0;
+            timeLeft = 30;
+            document.getElementById('score').innerText = score;
+            document.getElementById('timer').innerText = timeLeft;
+            
+            timerId = setInterval(() => {
+                timeLeft--;
+                document.getElementById('timer').innerText = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    alert("Time's up!");
+                    nextPage(2);
+                }
+            }, 1000);
+
+            spawnKiss();
+        }
+
+        function spawnKiss() {
+            if (score >= 10) {
+                clearInterval(timerId);
+                setTimeout(() => nextPage(4), 500);
+                return;
+            }
+
+            const gameArea = document.getElementById('game-area');
+            const kiss = document.createElement('div');
+            kiss.className = 'kiss-icon';
+            kiss.innerText = '💋';
+            
+            const x = Math.random() * (gameArea.clientWidth - 60) + 10;
+            const y = Math.random() * (gameArea.clientHeight - 60) + 10;
+            
+            kiss.style.left = x + 'px';
+            kiss.style.top = y + 'px';
+
+            kiss.onclick = (e) => {
+                createBurst(x + 20, y + 20); // Center the burst on the kiss
+                score++;
+                document.getElementById('score').innerText = score;
+                gameArea.removeChild(kiss);
+                spawnKiss();
+            };
+
+            gameArea.appendChild(kiss);
+        }
+
+        function createBurst(x, y) {
+            const gameArea = document.getElementById('game-area');
+            const particles = ['❤', '💖', '✨', '🌸'];
+            
+            for (let i = 0; i < 8; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.innerText = particles[Math.floor(Math.random() * particles.length)];
+                p.style.left = x + 'px';
+                p.style.top = y + 'px';
+                
+                // Random explosion direction
+                const tx = (Math.random() - 0.5) * 200;
+                const ty = (Math.random() - 0.5) * 200;
+                p.style.setProperty('--tx', `${tx}px`);
+                p.style.setProperty('--ty', `${ty}px`);
+                
+                gameArea.appendChild(p);
+                setTimeout(() => p.remove(), 800);
+            }
+        }
+    </script>
+</body>
+</html>
